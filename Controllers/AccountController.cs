@@ -46,7 +46,32 @@ namespace ExamSystem.Controllers
         [HttpPost]
         public ActionResult Register(string email, string password, string role)
         {
-            //HASH THE PASSWORD HERE
+            bool hasError = false;
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ViewBag.EmailError = "Email is required";
+                hasError = true;
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                ViewBag.PasswordError = "Password is required";
+                hasError = true;
+            }
+
+            if (string.IsNullOrWhiteSpace(role))
+            {
+                ViewBag.RoleError = "Please select a role";
+                hasError = true;
+            }
+
+            if (hasError)
+            {
+                return View(); // stop here, do NOT insert
+            }
+
+            //Hash password
             string hashedPassword = GetHash(password);
 
             SqlConnection con = new SqlConnection(
@@ -54,17 +79,18 @@ namespace ExamSystem.Controllers
             con.Open();
 
             SqlCommand cmd = new SqlCommand(
-                "INSERT INTO Users VALUES (@email, @pass, @role)", con);
+                "INSERT INTO Users VALUES (@email,@pass,@role)", con);
 
             cmd.Parameters.AddWithValue("@email", email);
-            cmd.Parameters.AddWithValue("@pass", hashedPassword); // ✅ HASHED
+            cmd.Parameters.AddWithValue("@pass", hashedPassword);
             cmd.Parameters.AddWithValue("@role", role);
 
             cmd.ExecuteNonQuery();
 
-            ViewBag.Msg = "Registration Completed";
+            ViewBag.Msg = "Registration successful";
             return View();
         }
+
 
 
 

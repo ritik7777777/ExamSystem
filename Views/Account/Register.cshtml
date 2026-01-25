@@ -1,51 +1,29 @@
-﻿
-@{
-    ViewBag.Title = "Register";
-}
+﻿<form method="post" action="/Account/Register">
 
-
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white text-center">
-                    <h4>Register Student</h4>
-                </div>
-                <div class="card-body">
-
-                    @if (ViewBag.Msg != null)
-                    {
-                        <div class="alert alert-success">
-                            @ViewBag.Msg
-                        </div>
-                    }
-
-                    <form method="post">
-                        <div class="mb-3">
-                            <label>Email</label>
-                            <input type="text" name="email" class="form-control" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label>Password</label>
-                            <input type="password" name="password" class="form-control" />
-                        </div>
-
-                        <input type="hidden" name="role" value="Student" />
-
-                        <button class="btn btn-success w-100">
-                            Register
-                        </button>
-                    </form>
-
-                </div>
-            </div>
-        </div>
+    <div class="mb-3">
+        <label>Email</label>
+        <input type="text" name="email" class="form-control" />
+        <span style="color:red">@ViewBag.EmailError</span>
     </div>
-</div>
 
+    <div class="mb-3">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" />
+        <span style="color:red">@ViewBag.PasswordError</span>
+    </div>
 
-@if (ViewBag.Msg != null)
-{
+    <div class="mb-3">
+        <label>Role</label>
+        <select name="role" class="form-control">
+            <option value="">-- Select Role --</option>
+            <option value="Admin">Admin</option>
+            <option value="Student">Student</option>
+        </select>
+        <span style="color:red">@ViewBag.RoleError</span>
+    </div>
+
+    <button class="btn btn-primary">Register</button>
+    @Html.ActionLink("Back to Admin DashBoard","AdminDashboard")
+
     <p style="color:green">@ViewBag.Msg</p>
-}
+</form>
