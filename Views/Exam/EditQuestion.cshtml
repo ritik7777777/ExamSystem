@@ -1,0 +1,63 @@
+﻿@model System.Data.DataRow
+
+<div class="container mt-4">
+    <h2>Edit Question</h2>
+
+    <form method="post" action="/Exam/EditQuestion">
+
+        <input type="hidden" name="QuestionId"
+               value="@Model["QuestionId"]" />
+
+        <input type="hidden" name="ExamId"
+               value="@Model["ExamId"]" />
+
+        <div class="mb-3">
+            <label>Question</label>
+            <textarea name="QuestionText"
+                      class="form-control">@Model["QuestionText"]</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Option A</label>
+            <input type="text" name="OptionA"
+                   value="@Model["OptionA"]"
+                   class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>Option B</label>
+            <input type="text" name="OptionB"
+                   value="@Model["OptionB"]"
+                   class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>Option C</label>
+            <input type="text" name="OptionC"
+                   value="@Model["OptionC"]"
+                   class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>Option D</label>
+            <input type="text" name="OptionD"
+                   value="@Model["OptionD"]"
+                   class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>Correct Option</label>
+            <select name="CorrectOption" class="form-control">
+                <option @(Model["CorrectOption"].ToString() == "A" ? "selected" : "")>A</option>
+                <option @(Model["CorrectOption"].ToString() == "B" ? "selected" : "")>B</option>
+                <option @(Model["CorrectOption"].ToString() == "C" ? "selected" : "")>C</option>
+                <option @(Model["CorrectOption"].ToString() == "D" ? "selected" : "")>D</option>
+            </select>
+        </div>
+
+        <button class="btn btn-primary">Update</button>
+        <a href="/Exam/QuestionList/@Model["ExamId"]"
+           class="btn btn-secondary">Back</a>
+
+    </form>
+</div>

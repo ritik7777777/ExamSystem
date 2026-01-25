@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewBag.Title = "Register";
+}
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center">
+                    <h4>Register Student</h4>
+                </div>
+                <div class="card-body">
+
+                    @if (ViewBag.Msg != null)
+                    {
+                        <div class="alert alert-success">
+                            @ViewBag.Msg
+                        </div>
+                    }
+
+                    <form method="post">
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input type="text" name="email" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Password</label>
+                            <input type="password" name="password" class="form-control" />
+                        </div>
+
+                        <input type="hidden" name="role" value="Student" />
+
+                        <button class="btn btn-success w-100">
+                            Register
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@if (ViewBag.Msg != null)
+{
+    <p style="color:green">@ViewBag.Msg</p>
+}

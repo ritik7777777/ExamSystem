@@ -1,0 +1,26 @@
+﻿
+<div class="container mt-4">
+    <h2 class="mb-3">Admin Dashboard</h2>
+
+    <div class="alert alert-success">
+        Welcome Admin: <b>@Session["UserEmail"]</b>
+    </div>
+    @Html.ActionLink("Add New Student", "Register")
+    <div class="list-group">
+        <a class="list-group-item">Manage Users</a>
+
+        <a class="list-group-item" href="/Exam/CreateExam">
+            Create Exam
+        </a>
+        <a class="list-group-item" href="/Exam/ExamList">
+            View Exams
+        </a>
+
+        <a class="list-group-item" href="/Exam/AllResults">
+            View All Results
+        </a>
+    </div>
+
+    <br />
+    <a class="btn btn-danger">@Html.ActionLink("Logout", "Logout") </a>
+</div>

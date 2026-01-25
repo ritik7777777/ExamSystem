@@ -1,0 +1,31 @@
+﻿@model System.Data.DataTable
+
+<div class="container mt-4">
+    <h2>My Exam Results</h2>
+
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>Exam ID</th>
+            <th>Total Questions</th>
+            <th>Correct Answers</th>
+            <th>Marks</th>
+            <th>Date</th>
+        </tr>
+
+        @foreach (System.Data.DataRow row in Model.Rows)
+        {
+            <tr>
+                <td>@row["ExamId"]</td>
+                <td>@row["TotalQuestions"]</td>
+                <td>@row["CorrectAnswers"]</td>
+                <td>@row["Marks"]</td>
+                <td>@row["ResultDate"]</td>
+            </tr>
+        }
+    </table>
+
+    <a href="/Account/StudentDashboard"
+       class="btn btn-secondary">
+        Back
+    </a>
+</div>

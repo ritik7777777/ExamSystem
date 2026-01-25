@@ -1,0 +1,42 @@
+﻿@model System.Data.DataTable
+<div class="container mt-4">
+    <h2>Exam List</h2>
+
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>ID</th>
+            <th>Exam Name</th>
+            <th>Total Marks</th>
+            <th>Duration (min)</th>
+            <th>Created Date</th>
+            <th align="center">Action</th>
+        </tr>
+
+        @foreach (System.Data.DataRow row in Model.Rows)
+        {
+            <tr>
+                <td>@row["ExamId"]</td>
+                <td>@row["ExamName"]</td>
+                <td>@row["TotalMarks"]</td>
+                <td>@row["Duration"]</td>
+                <td>@row["CreatedDate"]</td>
+                <td>
+                    <a href="/Exam/AddQuestion/@row["ExamId"]"
+                       class="btn btn-sm btn-success">
+                        Add Question
+                    </a>
+                    <a href="/Exam/QuestionList/@row["ExamId"]"
+                       class="btn btn-sm btn-primary">
+                        View Questions
+                    </a>
+                </td>
+               
+            </tr>
+        }
+
+    </table>
+
+    <a href="/Account/AdminDashboard" class="btn btn-secondary">
+        Back
+    </a>
+</div>

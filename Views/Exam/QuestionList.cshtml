@@ -1,0 +1,45 @@
+﻿@model System.Data.DataTable
+
+<div class="container mt-4">
+    <h2>Questions List</h2>
+
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>ID</th>
+            <th>Question</th>
+            <th>Correct Option</th>
+            <th>Actions</th>
+        </tr>
+
+        @foreach (System.Data.DataRow row in Model.Rows)
+        {
+            <tr>
+                <td>@row["QuestionId"]</td>
+                <td>@row["QuestionText"]</td>
+                <td>@row["CorrectOption"]</td>
+                <td>
+                    <a href="/Exam/EditQuestion/@row["QuestionId"]"
+                       class="btn btn-sm btn-warning">
+                        Edit
+                    </a>
+
+                    <a href="/Exam/DeleteQuestion/@row["QuestionId"]"
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Are you sure?')">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+
+    <a href="/Exam/AddQuestion/@ViewBag.ExamId"
+       class="btn btn-success">
+        Add New Question
+    </a>
+
+    <a href="/Exam/ExamList"
+       class="btn btn-secondary ms-2">
+        Back
+    </a>
+</div>

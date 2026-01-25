@@ -1,0 +1,23 @@
+﻿<div class="container mt-4">
+    <h2 class="mb-3">Student Dashboard</h2>
+
+    <div class="alert alert-info">
+        Welcome Student: <b>@Session["UserEmail"]</b>
+    </div>
+
+    <div class="list-group">
+        <a class="list-group-item" href="/Exam/StudentExamList">
+            View Exams
+        </a>
+
+        <a class="list-group-item">Attempt Exam</a>
+        <a class="list-group-item" href="/Exam/MyResults">
+            My Results
+        </a>
+
+    </div>
+
+
+    <br />
+    <a class="btn btn-danger">@Html.ActionLink("Logout", "Logout")</a>
+</div>

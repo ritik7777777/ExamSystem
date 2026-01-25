@@ -1,0 +1,56 @@
+﻿@model System.Data.DataTable
+
+<div class="alert alert-warning text-center">
+    ⏰ Time Remaining: <span id="timer"></span>
+</div>
+
+<div class="container mt-4">
+    <h2>Exam Started</h2>
+
+    <form method="post" action="/Exam/SubmitExam">
+
+        @foreach (System.Data.DataRow row in Model.Rows)
+        {
+            <div class="card mb-3 p-3">
+                <b>@row["QuestionText"]</b><br /><br />
+
+                <input type="radio" name="q_@row["QuestionId"]" value="A" /> @row["OptionA"] <br />
+                <input type="radio" name="q_@row["QuestionId"]" value="B" /> @row["OptionB"] <br />
+                <input type="radio" name="q_@row["QuestionId"]" value="C" /> @row["OptionC"] <br />
+                <input type="radio" name="q_@row["QuestionId"]" value="D" /> @row["OptionD"] <br />
+            </div>
+        }
+
+        <button class="btn btn-danger">Submit Exam</button>
+
+    </form>
+</div>
+
+<script>
+    var minutes = @ViewBag.Duration;
+    var seconds = minutes * 60;
+
+    function startTimer() {
+        var timer = document.getElementById("timer");
+
+        var interval = setInterval(function () {
+            var m = Math.floor(seconds / 60);
+            var s = seconds % 60;
+
+            timer.innerHTML =
+                (m < 10 ? "0" : "") + m + ":" +
+                (s < 10 ? "0" : "") + s;
+
+            seconds--;
+
+            if (seconds < 0) {
+                clearInterval(interval);
+                alert("Time is up! Exam will be submitted.");
+                document.forms[0].submit(); // auto submit
+            }
+        }, 1000);
+    }
+
+    startTimer();
+</script>
+
