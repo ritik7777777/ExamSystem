@@ -3,14 +3,15 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.UI;
 //for Password Hashing
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.UI;
 //using System.Configuration;
 
 namespace ExamSystem.Controllers
@@ -39,16 +40,34 @@ namespace ExamSystem.Controllers
         [HttpGet]
         public ActionResult Register()
         {
-            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
-            {
-                return RedirectToAction("Login");
-            }
+            
             return View();
         }
         [HttpPost]
-        public ActionResult Register(string email, string password, string role)
+        public ActionResult Register(string email, string password, string requestedRole)
         {
-            //HASH THE PASSWORD HERE
+            bool hasError = false;
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ViewBag.EmailError = "Email required";
+                hasError = true;
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                ViewBag.PasswordError = "Password required";
+                hasError = true;
+            }
+
+            if (string.IsNullOrWhiteSpace(requestedRole))
+            {
+                ViewBag.RoleError = "Select a role";
+                hasError = true;
+            }
+
+            if (hasError)
+                return View();
             string hashedPassword = GetHash(password);
 
             SqlConnection con = new SqlConnection(
@@ -56,17 +75,20 @@ namespace ExamSystem.Controllers
             con.Open();
 
             SqlCommand cmd = new SqlCommand(
-                "INSERT INTO Users VALUES (@email, @pass, @role)", con);
+                @"INSERT INTO Users (Email, Password, RequestedRole, IsApproved)
+          VALUES (@email,@pass,@reqRole,0)", con);
 
             cmd.Parameters.AddWithValue("@email", email);
-            cmd.Parameters.AddWithValue("@pass", hashedPassword); // ✅ HASHED
-            cmd.Parameters.AddWithValue("@role", role);
+            cmd.Parameters.AddWithValue("@pass", hashedPassword);
+            cmd.Parameters.AddWithValue("@reqRole", requestedRole);
 
             cmd.ExecuteNonQuery();
 
-            ViewBag.Msg = "Registration Completed";
+            ViewBag.Msg = "Registration successful. Waiting for approval.";
             return View();
         }
+
+
 
 
 
@@ -76,36 +98,150 @@ namespace ExamSystem.Controllers
         {
             return View();
         }
-        [HttpPost]
-        public ActionResult Login(string email, string password) 
-        {
-            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
-            con.Open();
-            string hashedPassword = GetHash(password);
 
-            SqlCommand cmd = new SqlCommand("Select * from users where Email=@email And Password=@pass", con);
+        [HttpPost]
+        public ActionResult Login(string email, string password)
+        {
+            string hashedPassword = GetHash(password);
+            SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
+            con.Open();
+                        SqlCommand cmd = new SqlCommand(
+                "SELECT * FROM Users WHERE Email=@email AND Password=@pass", con);
             cmd.Parameters.AddWithValue("@email", email);
             cmd.Parameters.AddWithValue("@pass", hashedPassword);
             SqlDataReader dr = cmd.ExecuteReader();
-
             if (dr.Read())
             {
+                if (Convert.ToBoolean(dr["IsApproved"]) == false)
+                {
+                    ViewBag.Error = "Your account is pending approval.";
+                    return View();
+                }
                 Session["UserEmail"] = dr["Email"].ToString();
                 Session["UserRole"] = dr["Role"].ToString();
 
-                //redirect based on role
                 if (Session["UserRole"].ToString() == "Admin")
-                {
                     return RedirectToAction("AdminDashboard");
-                }
 
-                else return RedirectToAction("StudentDashboard");
-  
+                if (Session["UserRole"].ToString() == "SuperAdmin")
+                    return RedirectToAction("SuperAdminDashboard");
+
+                return RedirectToAction("StudentDashboard");
             }
-            ViewBag.Error = "Invalid Email or password";
+
+            ViewBag.Error = "Invalid email or password";
             return View();
-                
         }
+
+        //Pending Students
+        public ActionResult PendingStudents()
+        {
+            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
+                return RedirectToAction("Login", "Account");
+
+            SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
+            con.Open();
+
+            SqlDataAdapter da = new SqlDataAdapter(
+                "SELECT * FROM Users WHERE RequestedRole='Student' AND IsApproved=0", con);
+
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            return View(dt);
+        }
+        [HttpPost]
+        public ActionResult ApproveStudent(int id)
+        {
+            SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
+            con.Open();
+
+            SqlCommand cmd = new SqlCommand(
+                "UPDATE Users SET Role='Student', IsApproved=1 WHERE Id=@id", con);
+
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+
+            return RedirectToAction("PendingStudents");
+        }
+
+        [HttpPost]
+        public ActionResult RejectStudent(int id)
+        {
+            SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
+            con.Open();
+
+            SqlCommand cmd = new SqlCommand(
+                "DELETE FROM Users WHERE Id=@id", con);
+
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+
+            return RedirectToAction("PendingStudents");
+        }
+        public ActionResult SuperAdminDashboard()
+        {
+            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "SuperAdmin")
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            return View();
+        }
+        public ActionResult PendingAdmins()
+        {
+            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "SuperAdmin")
+                return RedirectToAction("Login", "Account");
+
+            SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
+            con.Open();
+
+            SqlDataAdapter da = new SqlDataAdapter(
+                "SELECT * FROM Users WHERE RequestedRole='Admin' AND IsApproved=0", con);
+
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            return View(dt);
+        }
+        [HttpPost]
+        public ActionResult ApproveAdmin(int id)
+        {
+            SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
+            con.Open();
+
+            SqlCommand cmd = new SqlCommand(
+                "UPDATE Users SET Role='Admin', IsApproved=1 WHERE Id=@id", con);
+
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+
+            return RedirectToAction("PendingAdmins");
+        }
+
+        [HttpPost]
+        public ActionResult RejectAdmin(int id)
+        {
+            SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
+            con.Open();
+
+            SqlCommand cmd = new SqlCommand(
+                "DELETE FROM Users WHERE Id=@id", con);
+
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+
+            return RedirectToAction("PendingAdmins");
+        }
+
+
         public ActionResult Dashboard()
         {
             if (Session["UserEmail"] == null)

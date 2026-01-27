@@ -262,7 +262,7 @@ namespace ExamSystem.Controllers
             SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
             con.Open();
 
-            SqlCommand cmd = new SqlCommand("Select * from Results where StudentEmail=@email", con);
+            SqlCommand cmd = new SqlCommand("Select * from Results where StudentEmail=@email order by ResultDate Desc", con);
             cmd.Parameters.AddWithValue("@email", email);
             SqlDataReader dr = cmd.ExecuteReader();
             DataTable dt = new DataTable();
