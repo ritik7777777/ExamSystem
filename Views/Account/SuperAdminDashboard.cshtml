@@ -1,17 +1,16 @@
 ﻿<div class="container mt-4">
-    <h2>Super Admin Dashboard</h2>
+    <h2 class="mb-3">Super Admin Dashboard</h2>
 
-    <ul>
-        <li>
-            <a href="/Account/PendingAdmins">
-                Approve Admin Registrations
-            </a>
-        </li>
+    <div class="alert alert-success">
+        Welcome SuperAdmin: <b>@Session["UserEmail"]</b>
+    </div>
 
-        <li>
-            <a href="/Account/Logout">
-                Logout
-            </a>
-        </li>
-    </ul>
+    <div class="list-group">
+        <a class="list-group-item" href="/Account/PendingAdmins">Approve Admins</a>
+
+        
+    </div>
+
+    <br />
+    <a class="btn btn-danger">@Html.ActionLink("Logout", "Logout") </a>
 </div>

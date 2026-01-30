@@ -88,9 +88,6 @@ namespace ExamSystem.Controllers
 
 
 
-
-
-
         [HttpGet]
         public ActionResult Login()
         {
@@ -130,6 +127,11 @@ namespace ExamSystem.Controllers
 
             ViewBag.Error = "Invalid email or password";
             return View();
+        }
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            return RedirectToAction("Login");
         }
 
         //Pending Students
@@ -248,11 +250,7 @@ namespace ExamSystem.Controllers
             }
             return View();
         }
-        public ActionResult Logout()
-        {
-            Session.Clear();
-            return RedirectToAction("Login");
-        }
+       
 
         public ActionResult AdminDashboard()
         {

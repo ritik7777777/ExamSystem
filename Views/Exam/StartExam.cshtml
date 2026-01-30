@@ -1,39 +1,108 @@
 ﻿@model System.Data.DataTable
 
-<div class="alert alert-warning text-center">
+<div class="alert alert-warning text-center fw-bold">
     ⏰ Time Remaining: <span id="timer"></span>
 </div>
 
 <div class="container mt-4">
-    <h2>Exam Started</h2>
+    <h2 class="text-center mb-4">📝 Exam Started</h2>
 
     <form method="post" action="/Exam/SubmitExam">
 
-        @foreach (System.Data.DataRow row in Model.Rows)
-        {
-            <div class="card mb-3 p-3">
-                <b>@row["QuestionText"]</b><br /><br />
-
-                <input type="radio" name="q_@row["QuestionId"]" value="A" /> @row["OptionA"] <br />
-                <input type="radio" name="q_@row["QuestionId"]" value="B" /> @row["OptionB"] <br />
-                <input type="radio" name="q_@row["QuestionId"]" value="C" /> @row["OptionC"] <br />
-                <input type="radio" name="q_@row["QuestionId"]" value="D" /> @row["OptionD"] <br />
-            </div>
+        @{
+            int qNo = 1;
         }
 
-        <button class="btn btn-danger">Submit Exam</button>
+        @foreach (System.Data.DataRow row in Model.Rows)
+        {
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+
+                    <h5 class="card-title">
+                        Question @qNo
+                    </h5>
+
+                    <p class="fw-semibold">
+                        @row["QuestionText"]
+                    </p>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="q_@row["QuestionId"]"
+                               value="A"
+                               id="q@row[" QuestionId"]A" />
+                        <label class="form-check-label" for="q@row[" QuestionId"]A">
+                            @row["OptionA"]
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="q_@row["QuestionId"]"
+                               value="B"
+                               id="q@row[" QuestionId"]B" />
+                        <label class="form-check-label" for="q@row[" QuestionId"]B">
+                            @row["OptionB"]
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="q_@row["QuestionId"]"
+                               value="C"
+                               id="q@row[" QuestionId"]C" />
+                        <label class="form-check-label" for="q@row[" QuestionId"]C">
+                            @row["OptionC"]
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="q_@row["QuestionId"]"
+                               value="D"
+                               id="q@row[" QuestionId"]D" />
+                        <label class="form-check-label" for="q@row[" QuestionId"]D">
+                            @row["OptionD"]
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+            qNo++;
+        }
+
+        <div class="text-center mb-5">
+            <button class="btn btn-lg btn-danger">
+                Submit Exam
+            </button>
+        </div>
 
     </form>
 </div>
 
 <script>
-    var minutes = @ViewBag.Duration;
-    var seconds = minutes * 60;
+    /* ---------------- TIMER (PERSIST ON REFRESH) ---------------- */
+
+    var seconds = sessionStorage.getItem("remainingTime");
+
+    if (seconds === null) {
+        seconds = @ViewBag.Duration * 60;
+    } else {
+        seconds = parseInt(seconds);
+    }
 
     function startTimer() {
         var timer = document.getElementById("timer");
 
         var interval = setInterval(function () {
+
+            sessionStorage.setItem("remainingTime", seconds);
+
             var m = Math.floor(seconds / 60);
             var s = seconds % 60;
 
@@ -45,12 +114,54 @@
 
             if (seconds < 0) {
                 clearInterval(interval);
-                alert("Time is up! Exam is be submitted.");
-                document.forms[0].submit(); // auto submit
+                alert("Time is up! Exam will be submitted.");
+                sessionStorage.clear();
+                document.forms[0].submit();
             }
         }, 1000);
     }
 
     startTimer();
-</script>
 
+    /* ---------------- SAVE & RESTORE ANSWERS ---------------- */
+
+    document.querySelectorAll("input[type=radio]").forEach(radio => {
+        radio.addEventListener("change", function () {
+            sessionStorage.setItem(this.name, this.value);
+        });
+    });
+
+    document.querySelectorAll("input[type=radio]").forEach(radio => {
+        if (sessionStorage.getItem(radio.name) === radio.value) {
+            radio.checked = true;
+        }
+    });
+
+    /* ---------------- REFRESH WARNING ---------------- */
+
+    window.addEventListener("beforeunload", function (e) {
+        var msg = "Last Warning if you refresh the page again, the exam will get over!";
+        e.preventDefault();
+        e.returnValue = msg;
+        return msg;
+    });
+
+    /* ---------------- REFRESH COUNT (MAX 3) ---------------- */
+
+    var refreshCount = sessionStorage.getItem("refreshCount");
+
+    if (refreshCount === null) {
+        refreshCount = 0;
+    } else {
+        refreshCount = parseInt(refreshCount);
+    }
+
+    refreshCount++;
+    sessionStorage.setItem("refreshCount", refreshCount);
+
+    if (refreshCount >= 3) {
+        alert("You refreshed the page too many times. Exam is be submitted.");
+        sessionStorage.clear();
+        document.forms[0].submit();
+    }
+</script>
