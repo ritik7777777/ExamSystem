@@ -13,16 +13,19 @@
         <tr>
             <td>@row["Email"]</td>
             <td>
-                <form method="post" action="/Account/ApproveAdmin">
+                <form method="post" action="/Account/ApproveAdmin" style="display:inline-block;">
                     <input type="hidden" name="id" value="@row["Id"]" />
-                    <button>Approve</button>
+                    <button class="btn btn-sm btn-success">Approve</button>
                 </form>
 
-                <form method="post" action="/Account/RejectAdmin">
+                <form method="post" action="/Account/RejectAdmin" style="display:inline-block;">
                     <input type="hidden" name="id" value="@row["Id"]" />
-                    <button>Reject</button>
+                    <button class="btn btn-sm btn-danger">Reject</button>
                 </form>
             </td>
         </tr>
     }
 </table>
+<a href="/Account/SuperAdminDashboard" class="btn btn-secondary">
+    Back
+</a>

@@ -10,6 +10,7 @@
             <th>Duration (min)</th>
             <th>Created Date</th>
             <th align="center">Action</th>
+            <th>Delete</th>
         </tr>
 
         @foreach (System.Data.DataRow row in Model.Rows)
@@ -28,6 +29,14 @@
                     <a href="/Exam/QuestionList/@row["ExamId"]"
                        class="btn btn-sm btn-primary">
                         View Questions
+                    </a>
+
+                </td>
+                <td>
+                    <a href="/Exam/DeleteExam/@row["ExamId"]"
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Are you sure you want to delete this exam and all its questions?');">
+                        Delete this Exam
                     </a>
                 </td>
                

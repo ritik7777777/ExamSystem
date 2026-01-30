@@ -49,6 +49,22 @@ namespace ExamSystem.Controllers
             dt.Load(dr);
             return View(dt);
         }
+
+        public ActionResult DeleteExam(int id)
+        {
+            SqlConnection con = new SqlConnection(
+                ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
+            con.Open();
+
+            SqlCommand cmd = new SqlCommand(
+                "DELETE FROM Exams WHERE ExamId=@id", con);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+
+            return RedirectToAction("ExamList");
+        }
+
+
         [HttpGet]
         public ActionResult AddQuestion(int id)
         {
