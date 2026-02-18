@@ -4,5 +4,5 @@ obj/
 *.user
 *.suo
 packages/
-
+*.txt
 *.sql

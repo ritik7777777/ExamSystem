@@ -66,7 +66,7 @@ namespace ExamSystem.Controllers
 
 
         [HttpGet]
-        public ActionResult AddQuestion(int id)
+        public ActionResult AddQuestion(int? id)
         {
             if (Session["UserRole"] == null || Session["UserRole"].ToString() !="Admin")
             {
@@ -102,7 +102,7 @@ namespace ExamSystem.Controllers
             return View();
         }
         [HttpGet]
-        public ActionResult EditQuestion(int id)
+        public ActionResult EditQuestion(int? id)
         {
             if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
             {
@@ -155,7 +155,7 @@ namespace ExamSystem.Controllers
             return RedirectToAction("ExamList");
         }
 
-        public ActionResult QuestionList(int id)
+        public ActionResult QuestionList(int? id)
         {
             if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
             {
@@ -188,8 +188,18 @@ namespace ExamSystem.Controllers
             return View(dt);
 
         }
+        //[HttpGet]
+
+        //public ActionResult StartExam()
+        //{
+        //    if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Student")
+        //    {
+        //        return RedirectToAction("Login", "Account");
+        //    }
+        //    return View();
+        //}
         [HttpGet]
-        public ActionResult StartExam(int id)
+        public ActionResult StartExam(int? id)
         {
             if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Student")
             {

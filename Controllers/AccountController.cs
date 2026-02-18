@@ -153,8 +153,11 @@ namespace ExamSystem.Controllers
             return View(dt);
         }
         [HttpPost]
-        public ActionResult ApproveStudent(int id)
+        public ActionResult ApproveStudent(int? id)
         {
+            if(Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
+                return RedirectToAction("Login", "Account");
+
             SqlConnection con = new SqlConnection(
                 ConfigurationManager.ConnectionStrings["ConStr"].ConnectionString);
             con.Open();
